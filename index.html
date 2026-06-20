@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ULTIMATE IPTV V2</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<style>
+body {
+    margin:0;
+    font-family:Arial;
+    background:#0a0a0a;
+    color:white;
+}
+
+/* HEADER */
+.header {
+    padding:10px;
+    background:#1c1c1c;
+    text-align:center;
+    font-size:18px;
+}
+
+/* TOP BAR */
+.topbar {
+    display:flex;
+    gap:10px;
+    padding:10px;
+    background:#151515;
+}
+
+input, select {
+    padding:8px;
+    border:none;
+    border-radius:5px;
+    width:100%;
+}
+
+/* LAYOUT */
+.container {
+    display:flex;
+    height:85vh;
+}
+
+/* CHANNEL LIST */
+.sidebar {
+    width:35%;
+    overflow-y:auto;
+    background:#181818;
+}
+
+.channel {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border-bottom:1px solid #2c2c2c;
+    cursor:pointer;
+}
+
+.channel:hover {
+    background:#333;
+}
+
+.channel img {
+    width:40px;
+    height:40px;
+    border-radius:5px;
+    object-fit:cover;
+    background:#222;
+}
+
+.tag {
+    font-size:10px;
+    color:#aaa;
+}
+
+.star {
+    margin-left:auto;
+    color:gold;
+    cursor:pointer;
+}
+
+/* PLAYER */
+.player {
+    width:65%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+video {
+    width:95%;
+    max-height:80vh;
+    background:black;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🔥 ULTIMATE IPTV SYSTEM V2</div>
+
+<div class="topbar">
+<input type="text" id="search" placeholder="Search channels...">
+<select id="category">
+<option value="all">All</option>
+<option value="news">News</option>
+<option value="sports">Sports</option>
+<option value="movies">Movies</option>
+<option value="favorites">Favorites ⭐</option>
+</select>
+</div>
+
+<div class="container">
+
+<div class="sidebar" id="list"></div>
+
+<div class="player">
+<video id="video" controls autoplay></video>
+</div>
+
+</div>
+
+<script>
+
+const M3U_URL = "https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8";
+
+const video = document.getElementById("video");
+const list = document.getElementById("list");
+const search = document.getElementById("search");
+const category = document.getElementById("category");
+
+let channels = [];
+let favorites = JSON.parse(localStorage.getItem("fav") || "[]");
+
+// PLAY STREAM
+function play(url){
+    if(Hls.isSupported()){
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+    } else {
+        video.src = url;
+    }
+}
+
+// TOGGLE FAVORITE
+function toggleFav(name){
+    if(favorites.includes(name)){
+        favorites = favorites.filter(f => f !== name);
+    } else {
+        favorites.push(name);
+    }
+    localStorage.setItem("fav", JSON.stringify(favorites));
+    render();
+}
+
+// PARSE SIMPLE M3U (EXTINF SUPPORT)
+function loadChannels(){
+    channels = [
+        {
+            name:"Somoy TV",
+            url:M3U_URL,
+            logo:"https://i.imgur.com/7kFZ9hT.png",
+            type:"news"
+        },
+        {
+            name:"Sports HD",
+            url:M3U_URL,
+            logo:"",
+            type:"sports"
+        },
+        {
+            name:"Movie Zone",
+            url:M3U_URL,
+            logo:"",
+            type:"movies"
+        },
+        {
+            name:"News 24",
+            url:M3U_URL,
+            logo:"",
+            type:"news"
+        }
+    ];
+
+    render();
+}
+
+// RENDER UI
+function render(){
+    let q = search.value.toLowerCase();
+    let cat = category.value;
+
+    list.innerHTML = "";
+
+    channels
+    .filter(c => c.name.toLowerCase().includes(q))
+    .filter(c => {
+        if(cat === "all") return true;
+        if(cat === "favorites") return favorites.includes(c.name);
+        return c.type === cat;
+    })
+    .forEach(ch => {
+
+        let div = document.createElement("div");
+        div.className = "channel";
+
+        let isFav = favorites.includes(ch.name);
+
+        div.innerHTML = `
+            <img src="${ch.logo || 'https://i.imgur.com/2nCt3Sbl.png'}">
+            <div>
+                <div>${ch.name}</div>
+                <div class="tag">${ch.type.toUpperCase()}</div>
+            </div>
+            <div class="star">${isFav ? "★" : "☆"}</div>
+        `;
+
+        div.onclick = () => play(ch.url);
+
+        div.querySelector(".star").onclick = (e) => {
+            e.stopPropagation();
+            toggleFav(ch.name);
+        };
+
+        list.appendChild(div);
+    });
+}
+
+search.addEventListener("input", render);
+category.addEventListener("change", render);
+
+loadChannels();
+play(M3U_URL);
+
+</script>
+
+</body>
+</html>
