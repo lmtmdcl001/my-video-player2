@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IPTV FIXED PLAYER</title>
+<title>ULTIMATE IPTV FIXED</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -19,6 +19,7 @@ color:white;
 padding:10px;
 text-align:center;
 background:#1c1c1c;
+font-size:18px;
 }
 
 .container{
@@ -33,7 +34,7 @@ background:#181818;
 }
 
 .channel{
-padding:10px;
+padding:12px;
 border-bottom:1px solid #2c2c2c;
 cursor:pointer;
 }
@@ -55,15 +56,22 @@ max-height:85vh;
 background:black;
 }
 .small{
-font-size:12px;
+font-size:11px;
 color:#aaa;
+}
+.status{
+padding:5px;
+font-size:12px;
+color:#0f0;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">🔥 FIXED IPTV PLAYER</div>
+<div class="header">🔥 ULTIMATE IPTV FIXED SYSTEM</div>
+
+<div class="status" id="status">Ready</div>
 
 <div class="container">
 
@@ -79,59 +87,79 @@ color:#aaa;
 
 const video = document.getElementById("video");
 const list = document.getElementById("list");
+const status = document.getElementById("status");
 
 let hls;
 
-// ▶ STOP OLD STREAM PROPERLY
-function stopStream(){
+// ▶ STOP FUNCTION (IMPORTANT FIX)
+function stop(){
     if(hls){
         hls.destroy();
         hls = null;
     }
     video.pause();
-    video.src = "";
+    video.removeAttribute("src");
+    video.load();
 }
 
-// ▶ PLAY FUNCTION (FIXED)
+// ▶ PLAY FUNCTION
 function play(url){
 
-    stopStream();
+    stop();
+
+    status.innerText = "Loading stream...";
 
     if(Hls.isSupported()){
-        hls = new Hls();
+        hls = new Hls({
+            maxBufferLength: 30
+        });
+
         hls.loadSource(url);
         hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function(){
+            status.innerText = "Playing ✔";
+            video.play();
+        });
+
+        hls.on(Hls.Events.ERROR, function(event, data){
+            status.innerText = "Error loading stream ❌ (maybe blocked/CORS)";
+            console.log(data);
+        });
+
     } else {
         video.src = url;
     }
 }
 
-// ▶ CHANNELS
+// ▶ YOUR 2 CHANNELS
 const channels = [
     {
-        name:"Somoy TV",
-        url:"https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8"
+        name: "Somoy TV",
+        url: "https://live.thebosstv.com:30443/dwlive/Somoy-TV/playlist.m3u8"
     },
     {
-        name:"NBCSN Live",
-        url:"https://storage.googleapis.com/xredsox/nbcsn/manifest.m3u8"
+        name: "NBCSN Live",
+        url: "https://storage.googleapis.com/xredsox/nbcsn/manifest.m3u8"
     }
 ];
 
-// ▶ RENDER
+// ▶ RENDER LIST
 function render(){
-    list.innerHTML="";
+
+    list.innerHTML = "";
 
     channels.forEach(ch=>{
-        let div=document.createElement("div");
-        div.className="channel";
 
-        div.innerHTML=`
+        let div = document.createElement("div");
+        div.className = "channel";
+
+        div.innerHTML = `
         <div>${ch.name}</div>
         <div class="small">${ch.url}</div>
         `;
 
-        div.onclick=()=>play(ch.url);
+        div.onclick = ()=>play(ch.url);
 
         list.appendChild(div);
     });
@@ -139,7 +167,7 @@ function render(){
 
 render();
 
-// AUTO PLAY FIRST
+// ▶ AUTO PLAY FIRST CHANNEL
 play(channels[0].url);
 
 </script>
