@@ -1,174 +1,305 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ULTIMATE IPTV FIXED</title>
+
+<title>Zamans IPTV</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
-body{
+*{
 margin:0;
-font-family:Arial;
-background:#0b0b0b;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#0f172a;
+font-family:Arial,sans-serif;
 color:white;
 }
 
 .header{
-padding:10px;
+background:#111827;
+padding:15px;
 text-align:center;
-background:#1c1c1c;
-font-size:18px;
+font-size:28px;
+font-weight:bold;
 }
 
 .container{
 display:flex;
-height:90vh;
+flex-wrap:wrap;
 }
 
 .sidebar{
-width:35%;
-overflow-y:auto;
-background:#181818;
+width:280px;
+background:#1e293b;
+min-height:100vh;
+padding:10px;
 }
 
 .channel{
 padding:12px;
-border-bottom:1px solid #2c2c2c;
+margin-bottom:8px;
+background:#334155;
+border-radius:8px;
 cursor:pointer;
 }
 
 .channel:hover{
-background:#333;
+background:#475569;
 }
 
-.player{
-width:65%;
-display:flex;
-justify-content:center;
-align-items:center;
+.main{
+flex:1;
+padding:15px;
+}
+
+.player-wrapper{
+position:relative;
+background:black;
+border-radius:12px;
+overflow:hidden;
 }
 
 video{
-width:95%;
-max-height:85vh;
+width:100%;
+display:block;
 background:black;
 }
-.small{
-font-size:11px;
-color:#aaa;
+
+.loader{
+position:absolute;
+top:50%;
+left:50%;
+width:60px;
+height:60px;
+margin-left:-30px;
+margin-top:-30px;
+border:6px solid rgba(255,255,255,.2);
+border-top:6px solid #22c55e;
+border-radius:50%;
+animation:spin 1s linear infinite;
+z-index:10;
 }
+
+.hidden{
+display:none;
+}
+
+@keyframes spin{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+.controls{
+margin-top:10px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+select,button{
+padding:10px;
+border:none;
+border-radius:8px;
+}
+
+button{
+background:#22c55e;
+color:white;
+cursor:pointer;
+}
+
 .status{
-padding:5px;
-font-size:12px;
-color:#0f0;
+margin-top:10px;
+color:#22c55e;
+}
+
+@media(max-width:768px){
+.sidebar{
+width:100%;
+min-height:auto;
+}
 }
 </style>
 </head>
-
 <body>
 
-<div class="header">🔥 ULTIMATE IPTV FIXED SYSTEM</div>
-
-<div class="status" id="status">Ready</div>
+<div class="header">📺 Zamans IPTV</div>
 
 <div class="container">
 
-<div class="sidebar" id="list"></div>
+<div class="sidebar">
 
-<div class="player">
-<video id="video" controls autoplay></video>
+<div class="channel"
+onclick="playChannel(channels[0].url)">
+NBCSN Live
+</div>
+
+<div class="channel"
+onclick="playChannel(channels[1].url)">
+Channel 2
+</div>
+
+<div class="channel"
+onclick="playChannel(channels[2].url)">
+Channel 3
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="player-wrapper">
+
+<div id="loader" class="loader"></div>
+
+<video id="video"
+controls
+autoplay
+playsinline>
+</video>
+
+</div>
+
+<div class="controls">
+
+<select id="qualitySelect">
+<option>Auto</option>
+</select>
+
+<button onclick="openFullscreen()">
+Fullscreen
+</button>
+
+</div>
+
+<div id="status" class="status">
+Connecting...
+</div>
+
 </div>
 
 </div>
 
 <script>
 
+const channels = [
+
+{
+name:"NBCSN Live",
+url:"https://storage.googleapis.com/xredsox/nbcsn/manifest.m3u8"
+},
+
+{
+name:"Channel 2",
+url:"PASTE_SECOND_CHANNEL_HERE"
+},
+
+{
+name:"Channel 3",
+url:"PASTE_THIRD_CHANNEL_HERE"
+}
+
+];
+
 const video = document.getElementById("video");
-const list = document.getElementById("list");
+const loader = document.getElementById("loader");
 const status = document.getElementById("status");
+const qualitySelect = document.getElementById("qualitySelect");
 
 let hls;
 
-// ▶ STOP FUNCTION (IMPORTANT FIX)
-function stop(){
-    if(hls){
-        hls.destroy();
-        hls = null;
-    }
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
+function showLoader(){
+loader.classList.remove("hidden");
 }
 
-// ▶ PLAY FUNCTION
-function play(url){
-
-    stop();
-
-    status.innerText = "Loading stream...";
-
-    if(Hls.isSupported()){
-        hls = new Hls({
-            maxBufferLength: 30
-        });
-
-        hls.loadSource(url);
-        hls.attachMedia(video);
-
-        hls.on(Hls.Events.MANIFEST_PARSED, function(){
-            status.innerText = "Playing ✔";
-            video.play();
-        });
-
-        hls.on(Hls.Events.ERROR, function(event, data){
-            status.innerText = "Error loading stream ❌ (maybe blocked/CORS)";
-            console.log(data);
-        });
-
-    } else {
-        video.src = url;
-    }
+function hideLoader(){
+loader.classList.add("hidden");
 }
 
-// ▶ YOUR 2 CHANNELS
-const channels = [
-    {
-        name: "Somoy TV",
-        url: "https://sofascore.live/api/premium-stream?url=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist_b2196000_sleng.m3u8&root=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist.m3u8&sig=ddec1d1b7da2e2eb93c3fab8e115f5b91a2bf29fc17aae6e25ccd38b58faeba9"
-    },
-    {
-        name: "NBCSN Live",
-        url: "https://storage.googleapis.com/xredsox/nbcsn/manifest.m3u8"
-    }
-];
+function playChannel(url){
 
-// ▶ RENDER LIST
-function render(){
+showLoader();
 
-    list.innerHTML = "";
-
-    channels.forEach(ch=>{
-
-        let div = document.createElement("div");
-        div.className = "channel";
-
-        div.innerHTML = `
-        <div>${ch.name}</div>
-        <div class="small">${ch.url}</div>
-        `;
-
-        div.onclick = ()=>play(ch.url);
-
-        list.appendChild(div);
-    });
+if(hls){
+hls.destroy();
 }
 
-render();
+if(Hls.isSupported()){
 
-// ▶ AUTO PLAY FIRST CHANNEL
-play(channels[0].url);
+hls = new Hls();
+
+hls.loadSource(url);
+hls.attachMedia(video);
+
+hls.on(Hls.Events.MANIFEST_PARSED,function(){
+
+hideLoader();
+
+status.innerHTML="🟢 LIVE";
+
+qualitySelect.innerHTML =
+'<option value="-1">Auto</option>';
+
+hls.levels.forEach((level,index)=>{
+
+const option =
+document.createElement("option");
+
+option.value=index;
+
+option.text=
+level.height
+? level.height+"p"
+: "Level "+index;
+
+qualitySelect.appendChild(option);
+
+});
+
+video.play().catch(()=>{});
+
+});
+
+hls.on(Hls.Events.ERROR,function(){
+
+hideLoader();
+
+status.innerHTML=
+"🔴 Stream unavailable";
+
+});
+
+}
+
+}
+
+qualitySelect.addEventListener("change",function(){
+
+if(!hls) return;
+
+hls.currentLevel =
+parseInt(this.value);
+
+});
+
+function openFullscreen(){
+
+if(video.requestFullscreen){
+video.requestFullscreen();
+}
+else if(video.webkitRequestFullscreen){
+video.webkitRequestFullscreen();
+}
+
+}
+
+playChannel(channels[0].url);
 
 </script>
 
