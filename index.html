@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zaman IPTV Ultra Optimized</title>
+<title>Zaman IPTV Pro Final</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -12,18 +12,20 @@
 
 body{
 font-family:Arial;
-background:linear-gradient(135deg,#0f172a,#111827);
+background:linear-gradient(135deg,#0f172a,#111827,#0b1220);
 color:white;
 }
 
+/* HEADER */
 .header{
 background:linear-gradient(90deg,#22c55e,#06b6d4,#a855f7);
 padding:18px;
 text-align:center;
-font-size:24px;
+font-size:22px;
 font-weight:bold;
 }
 
+/* TOPBAR */
 .topbar{
 padding:10px;
 background:#0b1220;
@@ -34,20 +36,21 @@ gap:10px;
 .topbar input{
 flex:1;
 padding:10px;
-border-radius:8px;
 border:none;
+border-radius:8px;
 outline:none;
 }
 
+/* LAYOUT */
 .container{display:flex;flex-wrap:wrap;}
 
 .sidebar{
 width:280px;
-background:#0b1220;
 height:100vh;
 overflow:auto;
-padding:10px;
+background:#0b1220;
 border-right:2px solid #22c55e;
+padding:10px;
 }
 
 .cat{
@@ -55,8 +58,8 @@ padding:8px;
 margin:5px 0;
 background:#1f2937;
 border-radius:8px;
-cursor:pointer;
 text-align:center;
+cursor:pointer;
 }
 
 .cat:hover{background:#22c55e;}
@@ -64,6 +67,7 @@ text-align:center;
 .channel{
 display:flex;
 justify-content:space-between;
+align-items:center;
 padding:10px;
 margin:6px 0;
 border-radius:10px;
@@ -79,6 +83,7 @@ background:linear-gradient(90deg,#22c55e,#06b6d4);
 
 .star{color:#facc15;cursor:pointer;}
 
+/* PLAYER */
 .main{flex:1;padding:15px;}
 
 .player{
@@ -100,8 +105,8 @@ height:50px;
 border:5px solid #444;
 border-top:5px solid #22c55e;
 border-radius:50%;
-animation:spin 1s linear infinite;
 transform:translate(-50%,-50%);
+animation:spin 1s linear infinite;
 }
 
 .hidden{display:none;}
@@ -110,6 +115,28 @@ transform:translate(-50%,-50%);
 to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
+/* CONTROLS */
+.controls{
+margin-top:10px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+select,button{
+padding:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+button{
+background:linear-gradient(90deg,#22c55e,#06b6d4);
+color:white;
+font-weight:bold;
+}
+
+/* FOOTER */
 .footer{
 margin-top:20px;
 padding:20px;
@@ -118,16 +145,20 @@ background:#0b1220;
 border-top:2px solid #22c55e;
 }
 
-.footer a{color:#22c55e;margin:0 10px;text-decoration:none;}
+.footer a{
+color:#22c55e;
+margin:0 10px;
+text-decoration:none;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">📺 Zaman IPTV Ultra Optimized Engine</div>
+<div class="header">📺 Zaman IPTV Pro Final Engine</div>
 
 <div class="topbar">
-<input id="search" placeholder="Search channel...">
+<input id="search" placeholder="Search channels...">
 </div>
 
 <div class="container">
@@ -136,9 +167,6 @@ border-top:2px solid #22c55e;
 
 <div class="cat" onclick="setCat('all')">All</div>
 <div class="cat" onclick="setCat('sports')">Sports</div>
-<div class="cat" onclick="setCat('news')">News</div>
-<div class="cat" onclick="setCat('movies')">Movies</div>
-<div class="cat" onclick="setCat('kids')">Kids</div>
 
 <div id="list"></div>
 
@@ -151,28 +179,40 @@ border-top:2px solid #22c55e;
 <video id="video" controls autoplay></video>
 </div>
 
-<div style="margin-top:10px;color:#22c55e;" id="status">Ready</div>
+<div class="controls">
+
+<!-- QUALITY -->
+<select id="qualitySelect">
+<option value="-1">Auto</option>
+<option value="360">360p</option>
+<option value="480">480p</option>
+<option value="720">720p</option>
+<option value="1080">1080p</option>
+</select>
+
+<button onclick="openFullscreen()">Fullscreen</button>
+
+</div>
+
+<div id="status" style="margin-top:10px;color:#22c55e;">Ready</div>
 
 </div>
 
 </div>
 
 <footer class="footer">
-<p>Zaman IPTV Ultra</p>
+<p>Zaman IPTV Pro Final</p>
 <a href="https://t.me/incomesz">Telegram</a>
 <a href="https://facebook.com/zamanr00">Facebook</a>
 </footer>
 
 <script>
 
-/* =========================
-   SPORTS 10 CHANNELS FIXED
-========================= */
+/* ================= CHANNELS (SPORTS 10) ================= */
 
 const channels = [
 
 {name:"Sports 1",cat:"sports",url:"https://sofascore.live/api/premium-stream?url=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist_b2196000_sleng.m3u8&root=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist.m3u8&sig=ddec1d1b7da2e2eb93c3fab8e115f5b91a2bf29fc17aae6e25ccd38b58faeba9"},
-
 {name:"Sports 2",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8"},
 {name:"Sports 3",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"},
 {name:"Sports 4",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/31/index.m3u8"},
@@ -181,34 +221,28 @@ const channels = [
 {name:"Sports 7",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8"},
 {name:"Sports 8",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8"},
 {name:"Sports 9",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/107/index.m3u8"},
-{name:"Sports 10",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/108/index.m3u8"},
-
-{name:"Bonus 1",cat:"sports",url:"https://a62dad94.wurl.com/manifest/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/bf2e2c08-6355-4c5a-8d38-e6f4470a558d/0.m3u8"},
-{name:"Bonus 2",cat:"sports",url:"https://d4ddgdmj1cvnm.cloudfront.net/scheduler/scheduleMaster/409/variant/22100007.m3u8"}
+{name:"Sports 10",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/108/index.m3u8"}
 
 ];
 
 let cat="all";
+let hls=null;
 
 const list=document.getElementById("list");
 const video=document.getElementById("video");
 const loader=document.getElementById("loader");
-const status=document.getElementById("status");
 const search=document.getElementById("search");
+const status=document.getElementById("status");
+const qualitySelect=document.getElementById("qualitySelect");
 
-let hls=null;
+/* ================= RENDER ================= */
 
 function setCat(c){
 cat=c;
 render();
 }
 
-/* =========================
-   RENDER
-========================= */
-
 function render(){
-
 list.innerHTML="";
 
 channels
@@ -218,7 +252,6 @@ channels
 
 const div=document.createElement("div");
 div.className="channel";
-
 div.innerHTML=`<span>${c.name}</span>`;
 
 div.onclick=()=>play(c.url);
@@ -228,9 +261,7 @@ list.appendChild(div);
 
 }
 
-/* =========================
-   BUFFER OPTIMIZED PLAYER
-========================= */
+/* ================= PLAYER (OPTIMIZED) ================= */
 
 function play(url){
 
@@ -241,31 +272,24 @@ status.innerText="Loading...";
 
 if(hls) hls.destroy();
 
-if(Hls.isSupported()){
-
 hls=new Hls({
-
 enableWorker:true,
 lowLatencyMode:true,
-
 backBufferLength:90,
 maxBufferLength:30,
 maxMaxBufferLength:60,
-
 liveSyncDurationCount:3,
 liveMaxLatencyDurationCount:10,
-
 fragLoadingTimeOut:20000,
 manifestLoadingTimeOut:10000,
 levelLoadingTimeOut:10000,
-
 startLevel:-1
 });
 
 hls.loadSource(url);
 hls.attachMedia(video);
 
-/* SUCCESS */
+/* READY */
 hls.on(Hls.Events.MANIFEST_PARSED,()=>{
 loader.classList.add("hidden");
 status.innerText="🟢 LIVE";
@@ -273,16 +297,16 @@ video.play();
 });
 
 /* ERROR RECOVERY */
-hls.on(Hls.Events.ERROR,function(event,data){
+hls.on(Hls.Events.ERROR,(e,d)=>{
 
-if(data.fatal){
+if(d.fatal){
 
-if(data.type===Hls.ErrorTypes.NETWORK_ERROR){
-status.innerText="🔄 Network retrying...";
+if(d.type===Hls.ErrorTypes.NETWORK_ERROR){
+status.innerText="🔄 Network retry...";
 hls.startLoad();
 }
 
-else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){
+else if(d.type===Hls.ErrorTypes.MEDIA_ERROR){
 status.innerText="⚠️ Recovering stream...";
 hls.recoverMediaError();
 }
@@ -291,19 +315,55 @@ else{
 status.innerText="❌ Stream failed";
 hls.destroy();
 }
+
 }
 
 });
 
-}else{
-video.src=url;
-video.play();
 }
+
+/* ================= QUALITY ================= */
+
+qualitySelect.addEventListener("change",function(){
+
+if(!hls) return;
+
+let selected=parseInt(this.value);
+
+if(selected===-1){
+hls.currentLevel=-1;
+return;
+}
+
+for(let i=0;i<hls.levels.length;i++){
+if(hls.levels[i].height>=selected){
+hls.currentLevel=i;
+break;
+}
+}
+
+});
+
+/* ================= FULLSCREEN ================= */
+
+function openFullscreen(){
+
+if(video.requestFullscreen){
+video.requestFullscreen();
+}
+else if(video.webkitRequestFullscreen){
+video.webkitRequestFullscreen();
+}
+else if(video.webkitEnterFullscreen){
+video.webkitEnterFullscreen();
+}
+
 }
 
 /* SEARCH */
 search.oninput=render;
 
+/* INIT */
 render();
 
 </script>
