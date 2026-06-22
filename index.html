@@ -3,364 +3,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Zamans IPTV</title>
+<title>Zaman IPTV Ultra Optimized</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-background:#0f172a;
-font-family:Arial,sans-serif;
+font-family:Arial;
+background:linear-gradient(135deg,#0f172a,#111827);
 color:white;
 }
 
 .header{
-background:#111827;
-padding:15px;
+background:linear-gradient(90deg,#22c55e,#06b6d4,#a855f7);
+padding:18px;
 text-align:center;
-font-size:28px;
+font-size:24px;
 font-weight:bold;
 }
 
-.container{
+.topbar{
+padding:10px;
+background:#0b1220;
 display:flex;
-flex-wrap:wrap;
+gap:10px;
 }
+
+.topbar input{
+flex:1;
+padding:10px;
+border-radius:8px;
+border:none;
+outline:none;
+}
+
+.container{display:flex;flex-wrap:wrap;}
 
 .sidebar{
 width:280px;
-background:#1e293b;
-min-height:100vh;
+background:#0b1220;
+height:100vh;
+overflow:auto;
 padding:10px;
-overflow-y:auto;
+border-right:2px solid #22c55e;
 }
 
-.channel{
-padding:12px;
-margin-bottom:8px;
-background:#334155;
+.cat{
+padding:8px;
+margin:5px 0;
+background:#1f2937;
 border-radius:8px;
 cursor:pointer;
+text-align:center;
+}
+
+.cat:hover{background:#22c55e;}
+
+.channel{
+display:flex;
+justify-content:space-between;
+padding:10px;
+margin:6px 0;
+border-radius:10px;
+cursor:pointer;
+background:linear-gradient(90deg,#1e293b,#334155);
 transition:.3s;
 }
 
 .channel:hover{
-background:#475569;
+transform:scale(1.03);
+background:linear-gradient(90deg,#22c55e,#06b6d4);
 }
 
-.main{
-flex:1;
-padding:15px;
-}
+.star{color:#facc15;cursor:pointer;}
 
-.player-wrapper{
-position:relative;
+.main{flex:1;padding:15px;}
+
+.player{
 background:black;
 border-radius:12px;
 overflow:hidden;
+position:relative;
+box-shadow:0 0 25px #22c55e;
 }
 
-video{
-width:100%;
-display:block;
-background:black;
-}
+video{width:100%;}
 
 .loader{
 position:absolute;
 top:50%;
 left:50%;
-width:60px;
-height:60px;
-margin-left:-30px;
-margin-top:-30px;
-border:6px solid rgba(255,255,255,.2);
-border-top:6px solid #22c55e;
+width:50px;
+height:50px;
+border:5px solid #444;
+border-top:5px solid #22c55e;
 border-radius:50%;
 animation:spin 1s linear infinite;
-z-index:10;
+transform:translate(-50%,-50%);
 }
 
-.hidden{
-display:none;
-}
+.hidden{display:none;}
 
 @keyframes spin{
-from{transform:rotate(0deg);}
-to{transform:rotate(360deg);}
+to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 
-.controls{
-margin-top:10px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
+.footer{
+margin-top:20px;
+padding:20px;
+text-align:center;
+background:#0b1220;
+border-top:2px solid #22c55e;
 }
 
-select,button{
-padding:10px;
-border:none;
-border-radius:8px;
-}
-
-button{
-background:#22c55e;
-color:white;
-cursor:pointer;
-}
-
-.status{
-margin-top:10px;
-color:#22c55e;
-font-weight:bold;
-}
-
-@media(max-width:768px){
-.sidebar{
-width:100%;
-min-height:auto;
-}
-}
+.footer a{color:#22c55e;margin:0 10px;text-decoration:none;}
 </style>
 </head>
+
 <body>
 
-<div class="header">📺 Zamans IPTV</div>
+<div class="header">📺 Zaman IPTV Ultra Optimized Engine</div>
+
+<div class="topbar">
+<input id="search" placeholder="Search channel...">
+</div>
 
 <div class="container">
 
-<div class="sidebar" id="channelList"></div>
+<div class="sidebar">
+
+<div class="cat" onclick="setCat('all')">All</div>
+<div class="cat" onclick="setCat('sports')">Sports</div>
+<div class="cat" onclick="setCat('news')">News</div>
+<div class="cat" onclick="setCat('movies')">Movies</div>
+<div class="cat" onclick="setCat('kids')">Kids</div>
+
+<div id="list"></div>
+
+</div>
 
 <div class="main">
 
-<div class="player-wrapper">
-
+<div class="player">
 <div id="loader" class="loader hidden"></div>
-
-<video
-id="video"
-controls
-autoplay
-playsinline>
-</video>
-
+<video id="video" controls autoplay></video>
 </div>
 
-<div class="controls">
+<div style="margin-top:10px;color:#22c55e;" id="status">Ready</div>
 
-<select id="qualitySelect">
-<option value="-1">Auto</option>
-</select>
-
-<button onclick="openFullscreen()">
-Fullscreen
-</button>
-
-</div>
-
-<div id="status" class="status">
-Ready
 </div>
 
 </div>
 
-</div>
+<footer class="footer">
+<p>Zaman IPTV Ultra</p>
+<a href="https://t.me/incomesz">Telegram</a>
+<a href="https://facebook.com/zamanr00">Facebook</a>
+</footer>
 
 <script>
 
+/* =========================
+   SPORTS 10 CHANNELS FIXED
+========================= */
+
 const channels = [
 
-{
-name:"Go Live HD",
-url:"https://sofascore.live/api/premium-stream?url=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist_b2196000_sleng.m3u8&root=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist.m3u8&sig=ddec1d1b7da2e2eb93c3fab8e115f5b91a2bf29fc17aae6e25ccd38b58faeba9"
-},
+{name:"Sports 1",cat:"sports",url:"https://sofascore.live/api/premium-stream?url=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist_b2196000_sleng.m3u8&root=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist.m3u8&sig=ddec1d1b7da2e2eb93c3fab8e115f5b91a2bf29fc17aae6e25ccd38b58faeba9"},
 
-{
-name:"Channel 26",
-url:"https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8"
-},
+{name:"Sports 2",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8"},
+{name:"Sports 3",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"},
+{name:"Sports 4",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/31/index.m3u8"},
+{name:"Sports 5",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8"},
+{name:"Sports 6",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/30/index.m3u8"},
+{name:"Sports 7",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8"},
+{name:"Sports 8",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8"},
+{name:"Sports 9",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/107/index.m3u8"},
+{name:"Sports 10",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/108/index.m3u8"},
 
-{
-name:"BEIN Arabic",
-url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"
-},
-
-{
-name:"Channel 31",
-url:"https://1nyaler.streamhostingcdn.top/stream/31/index.m3u8"
-},
-
-{
-name:"Channel 32",
-url:"https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8"
-},
-
-{
-name:"Channel 30",
-url:"https://1nyaler.streamhostingcdn.top/stream/30/index.m3u8"
-},
-
-{
-name:"Channel 33",
-url:"https://1nyaler.streamhostingcdn.top/stream/33/index.m3u8"
-},
-
-{
-name:"Channel 106",
-url:"https://1nyaler.streamhostingcdn.top/stream/106/index.m3u8"
-},
-
-{
-name:"Channel 107",
-url:"https://1nyaler.streamhostingcdn.top/stream/107/index.m3u8"
-},
-
-{
-name:"Channel 108",
-url:"https://1nyaler.streamhostingcdn.top/stream/108/index.m3u8"
-},
-
-{
-name:"FIFA Plus",
-url:"https://a62dad94.wurl.com/manifest/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/bf2e2c08-6355-4c5a-8d38-e6f4470a558d/0.m3u8"
-}
+{name:"Bonus 1",cat:"sports",url:"https://a62dad94.wurl.com/manifest/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/bf2e2c08-6355-4c5a-8d38-e6f4470a558d/0.m3u8"},
+{name:"Bonus 2",cat:"sports",url:"https://d4ddgdmj1cvnm.cloudfront.net/scheduler/scheduleMaster/409/variant/22100007.m3u8"}
 
 ];
 
-const video = document.getElementById("video");
-const loader = document.getElementById("loader");
-const status = document.getElementById("status");
-const qualitySelect = document.getElementById("qualitySelect");
-const channelList = document.getElementById("channelList");
+let cat="all";
 
-let hls = null;
+const list=document.getElementById("list");
+const video=document.getElementById("video");
+const loader=document.getElementById("loader");
+const status=document.getElementById("status");
+const search=document.getElementById("search");
 
-function showLoader(){
-loader.classList.remove("hidden");
+let hls=null;
+
+function setCat(c){
+cat=c;
+render();
 }
 
-function hideLoader(){
-loader.classList.add("hidden");
-}
+/* =========================
+   RENDER
+========================= */
 
-channels.forEach(channel=>{
+function render(){
+
+list.innerHTML="";
+
+channels
+.filter(c=>cat==="all"||c.cat===cat)
+.filter(c=>c.name.toLowerCase().includes(search.value.toLowerCase()))
+.forEach(c=>{
 
 const div=document.createElement("div");
-
 div.className="channel";
-div.textContent=channel.name;
 
-div.onclick=()=>{
-playChannel(channel.url);
-};
+div.innerHTML=`<span>${c.name}</span>`;
 
-channelList.appendChild(div);
+div.onclick=()=>play(c.url);
 
+list.appendChild(div);
 });
 
-function playChannel(url){
-
-showLoader();
-
-status.innerHTML="Connecting...";
-
-if(hls){
-hls.destroy();
-hls=null;
 }
 
-qualitySelect.innerHTML =
-'<option value="-1">Auto</option>';
+/* =========================
+   BUFFER OPTIMIZED PLAYER
+========================= */
+
+function play(url){
+
+if(!url) return;
+
+loader.classList.remove("hidden");
+status.innerText="Loading...";
+
+if(hls) hls.destroy();
 
 if(Hls.isSupported()){
 
-hls=new Hls();
+hls=new Hls({
+
+enableWorker:true,
+lowLatencyMode:true,
+
+backBufferLength:90,
+maxBufferLength:30,
+maxMaxBufferLength:60,
+
+liveSyncDurationCount:3,
+liveMaxLatencyDurationCount:10,
+
+fragLoadingTimeOut:20000,
+manifestLoadingTimeOut:10000,
+levelLoadingTimeOut:10000,
+
+startLevel:-1
+});
 
 hls.loadSource(url);
 hls.attachMedia(video);
 
+/* SUCCESS */
 hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-
-hideLoader();
-
-status.innerHTML="🟢 LIVE";
-
-hls.levels.forEach((level,index)=>{
-
-const option=document.createElement("option");
-
-option.value=index;
-
-option.text=
-level.height
-? level.height+"p"
-: "Level "+index;
-
-qualitySelect.appendChild(option);
-
-});
-
-video.play().catch(()=>{});
-
-});
-
-hls.on(Hls.Events.ERROR,()=>{
-
-hideLoader();
-
-status.innerHTML=
-"🔴 Stream unavailable";
-
-});
-
-}
-else if(video.canPlayType('application/vnd.apple.mpegurl')){
-
-video.src=url;
-
-video.addEventListener('loadedmetadata',()=>{
-
-hideLoader();
-
-status.innerHTML="🟢 LIVE";
-
+loader.classList.add("hidden");
+status.innerText="🟢 LIVE";
 video.play();
+});
+
+/* ERROR RECOVERY */
+hls.on(Hls.Events.ERROR,function(event,data){
+
+if(data.fatal){
+
+if(data.type===Hls.ErrorTypes.NETWORK_ERROR){
+status.innerText="🔄 Network retrying...";
+hls.startLoad();
+}
+
+else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){
+status.innerText="⚠️ Recovering stream...";
+hls.recoverMediaError();
+}
+
+else{
+status.innerText="❌ Stream failed";
+hls.destroy();
+}
+}
 
 });
 
+}else{
+video.src=url;
+video.play();
 }
 }
 
-qualitySelect.addEventListener("change",function(){
+/* SEARCH */
+search.oninput=render;
 
-if(hls){
-hls.currentLevel=parseInt(this.value);
-}
-
-});
-
-function openFullscreen(){
-
-if(video.requestFullscreen){
-video.requestFullscreen();
-}
-else if(video.webkitRequestFullscreen){
-video.webkitRequestFullscreen();
-}
-else if(video.webkitEnterFullscreen){
-video.webkitEnterFullscreen();
-}
-
-}
-
-playChannel(channels[0].url);
+render();
 
 </script>
 
