@@ -25,75 +25,25 @@ font-weight:bold;
 background:linear-gradient(90deg,#22c55e,#06b6d4,#a855f7);
 }
 
-/* TOPBAR */
+/* TOP SEARCH */
 .topbar{
-display:flex;
 padding:10px;
 background:#0b1220;
 }
 
 .topbar input{
-flex:1;
+width:100%;
 padding:10px;
 border:none;
 border-radius:8px;
+outline:none;
 }
 
-/* LAYOUT */
-.container{display:flex;flex-wrap:wrap;}
-
-/* SIDEBAR */
-.sidebar{
-width:280px;
-background:#0b1220;
-height:100vh;
-overflow:auto;
+/* PLAYER TOP */
+.player-area{
 padding:10px;
-border-right:2px solid #22c55e;
 }
 
-/* CATEGORY */
-.cat{
-padding:10px;
-margin:5px 0;
-background:#1f2937;
-border-radius:8px;
-cursor:pointer;
-text-align:center;
-}
-
-.cat:hover{background:#22c55e;}
-
-/* GRID */
-.grid{
-display:grid;
-grid-template-columns:repeat(1,1fr);
-gap:8px;
-margin-top:10px;
-}
-
-/* CHANNEL */
-.channel{
-padding:12px;
-background:linear-gradient(135deg,#1e293b,#334155);
-border-radius:10px;
-cursor:pointer;
-text-align:center;
-transition:.3s;
-}
-
-.channel:hover{
-transform:scale(1.05);
-background:linear-gradient(135deg,#22c55e,#06b6d4);
-}
-
-/* MAIN */
-.main{
-flex:1;
-padding:15px;
-}
-
-/* PLAYER */
 .player{
 background:black;
 border-radius:12px;
@@ -121,6 +71,52 @@ animation:spin 1s linear infinite;
 
 @keyframes spin{
 to{transform:translate(-50%,-50%) rotate(360deg);}
+}
+
+/* LAYOUT */
+.container{
+display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+width:280px;
+background:#0b1220;
+height:100vh;
+overflow:auto;
+padding:10px;
+border-right:2px solid #22c55e;
+}
+
+.cat{
+padding:10px;
+margin:5px 0;
+background:#1f2937;
+border-radius:8px;
+cursor:pointer;
+text-align:center;
+}
+
+.cat:hover{background:#22c55e;}
+
+/* CHANNEL */
+.channel{
+padding:12px;
+margin:6px 0;
+background:linear-gradient(135deg,#1e293b,#334155);
+border-radius:10px;
+cursor:pointer;
+text-align:center;
+}
+
+.channel:hover{
+background:linear-gradient(135deg,#22c55e,#06b6d4);
+}
+
+/* MAIN */
+.main{
+flex:1;
+padding:15px;
 }
 
 /* CONTROLS */
@@ -151,8 +147,30 @@ color:#22c55e;
 font-weight:bold;
 }
 
+/* FOOTER */
+.footer{
+margin-top:20px;
+padding:20px;
+text-align:center;
+background:#0b1220;
+border-top:2px solid #22c55e;
+}
+
+.footer h3{
+color:#22c55e;
+margin-bottom:10px;
+}
+
+.footer a{
+color:#06b6d4;
+display:block;
+margin:5px 0;
+text-decoration:none;
+}
+
 /* MOBILE */
 @media(max-width:768px){
+.container{flex-direction:column;}
 .sidebar{
 width:100%;
 height:auto;
@@ -165,27 +183,35 @@ height:auto;
 
 <div class="header">📺 Zaman IPTV Ultimate Pro Engine</div>
 
+<!-- SEARCH -->
 <div class="topbar">
 <input id="search" placeholder="Search channels...">
 </div>
 
+<!-- PLAYER TOP -->
+<div class="player-area">
+<div class="player">
+<div id="loader" class="loader hidden"></div>
+<video id="video" controls autoplay></video>
+</div>
+</div>
+
 <div class="container">
 
+<!-- SIDEBAR -->
 <div class="sidebar">
 
 <div class="cat" onclick="setCat('sports')">🏆 Sports (12)</div>
 <div class="cat" onclick="setCat('all')">📺 All</div>
 
-<div class="grid" id="list"></div>
+<div id="list"></div>
 
 </div>
 
+<!-- MAIN -->
 <div class="main">
 
-<div class="player">
-<div id="loader" class="loader hidden"></div>
-<video id="video" controls autoplay></video>
-</div>
+<div class="status" id="status">Ready</div>
 
 <div class="controls">
 
@@ -202,17 +228,27 @@ height:auto;
 
 </div>
 
-<div class="status" id="status">Ready</div>
+</div>
 
 </div>
+
+<!-- FOOTER -->
+<div class="footer">
+
+<h3>Developer Contact</h3>
+
+<a href="https://t.me/incomesz">📱 Telegram: @incomesz</a>
+<a href="https://www.facebook.com/zamanr00">🌐 Facebook Profile</a>
+
+<p>📍 Rangpur, Bangladesh</p>
+<p>© 2026 Zaman IPTV. All Rights Reserved.</p>
 
 </div>
 
 <script>
 
-/* ================= CHANNELS ================= */
-const channels = [
-{name:"Sports 1",cat:"sports",url:"https://sofascore.live/api/premium-stream?url=..."},
+const channels=[
+{name:"Sports 1",cat:"sports",url:"https://sofascore.live/api/premium-stream?..."},
 {name:"Sports 2",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8"},
 {name:"Sports 3",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"},
 {name:"Sports 4",cat:"sports",url:"https://1nyaler.streamhostingcdn.top/stream/31/index.m3u8"},
@@ -230,7 +266,6 @@ let cat="sports";
 let hls=null;
 let autoQuality=true;
 
-/* ELEMENTS */
 const list=document.getElementById("list");
 const video=document.getElementById("video");
 const loader=document.getElementById("loader");
@@ -238,52 +273,31 @@ const search=document.getElementById("search");
 const status=document.getElementById("status");
 const qualitySelect=document.getElementById("qualitySelect");
 
-/* CATEGORY */
 function setCat(c){
 cat=c;
 render();
 }
 
-/* RENDER */
 function render(){
 list.innerHTML="";
-
 channels
 .filter(c=>cat==="all"||c.cat===cat)
 .filter(c=>c.name.toLowerCase().includes(search.value.toLowerCase()))
 .forEach(c=>{
-
 const div=document.createElement("div");
 div.className="channel";
 div.innerText=c.name;
-
 div.onclick=()=>play(c.url);
-
 list.appendChild(div);
 });
 }
 
-/* NETWORK CHECK */
-async function getNet(){
-try{
-const t=performance.now();
-await fetch("https://1.1.1.1",{mode:"no-cors"});
-const d=performance.now()-t;
-if(d<200) return "high";
-if(d<600) return "mid";
-return "low";
-}catch(e){
-return "low";
-}
-}
-
 /* PLAY */
-async function play(url){
-
+function play(url){
 if(!url) return;
 
 loader.classList.remove("hidden");
-status.innerText="Buffering...";
+status.innerText="Loading...";
 
 if(hls) hls.destroy();
 
@@ -298,56 +312,18 @@ startLevel:-1
 hls.loadSource(url);
 hls.attachMedia(video);
 
-hls.on(Hls.Events.MANIFEST_PARSED, async ()=>{
-
+hls.on(Hls.Events.MANIFEST_PARSED,()=>{
 loader.classList.add("hidden");
 status.innerText="🟢 LIVE";
-
-if(autoQuality){
-
-let net=await getNet();
-
-if(net==="high") hls.currentLevel=hls.levels.length-1;
-else if(net==="mid") hls.currentLevel=Math.floor(hls.levels.length/2);
-else hls.currentLevel=0;
-
-}
-
 video.play();
 });
-
-/* ERROR RECOVERY */
-hls.on(Hls.Events.ERROR,(e,d)=>{
-
-if(d.fatal){
-if(d.type===Hls.ErrorTypes.NETWORK_ERROR){
-status.innerText="Reconnecting...";
-hls.startLoad();
-}
-else if(d.type===Hls.ErrorTypes.MEDIA_ERROR){
-status.innerText="Recovering...";
-hls.recoverMediaError();
-}
-else{
-status.innerText="Stream Error";
-hls.destroy();
-}
-}
-});
 }
 
-/* QUALITY MANUAL */
+/* QUALITY */
 qualitySelect.addEventListener("change",function(){
-
 if(!hls) return;
-
 let v=parseInt(this.value);
-
-if(v===-1){
-hls.currentLevel=-1;
-return;
-}
-
+if(v===-1){hls.currentLevel=-1;return;}
 for(let i=0;i<hls.levels.length;i++){
 if(hls.levels[i].height>=v){
 hls.currentLevel=i;
@@ -356,7 +332,7 @@ break;
 }
 });
 
-/* AUTO TOGGLE */
+/* AUTO */
 function toggleAutoQuality(){
 autoQuality=!autoQuality;
 status.innerText=autoQuality?"Auto ON":"Auto OFF";
