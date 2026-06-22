@@ -3,303 +3,347 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Zamans IPTV</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
 body{
-background:#0f172a;
-font-family:Arial,sans-serif;
-color:white;
+  background:#0b0f17;
+  color:white;
+  font-family:Arial,sans-serif;
 }
 
 .header{
-background:#111827;
-padding:15px;
-text-align:center;
-font-size:28px;
-font-weight:bold;
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:#111827;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #1f2937;
 }
 
-.container{
-display:flex;
-flex-wrap:wrap;
+.logo{
+  font-size:28px;
+  font-weight:bold;
 }
 
-.sidebar{
-width:280px;
-background:#1e293b;
-min-height:100vh;
-padding:10px;
+.search{
+  width:300px;
+  max-width:50%;
 }
 
-.channel{
-padding:12px;
-margin-bottom:8px;
-background:#334155;
-border-radius:8px;
-cursor:pointer;
+.search input{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
 }
 
-.channel:hover{
-background:#475569;
-}
-
-.main{
-flex:1;
-padding:15px;
+.hero{
+  padding:20px;
 }
 
 .player-wrapper{
-position:relative;
-background:black;
-border-radius:12px;
-overflow:hidden;
+  position:relative;
+  background:black;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 0 25px rgba(0,0,0,.5);
 }
 
 video{
-width:100%;
-display:block;
-background:black;
+  width:100%;
+  display:block;
+  background:black;
 }
 
 .loader{
-position:absolute;
-top:50%;
-left:50%;
-width:60px;
-height:60px;
-margin-left:-30px;
-margin-top:-30px;
-border:6px solid rgba(255,255,255,.2);
-border-top:6px solid #22c55e;
-border-radius:50%;
-animation:spin 1s linear infinite;
-z-index:10;
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:60px;
+  height:60px;
+  margin-left:-30px;
+  margin-top:-30px;
+  border:6px solid rgba(255,255,255,.2);
+  border-top:6px solid #22c55e;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
 }
 
 .hidden{
-display:none;
+  display:none;
 }
 
 @keyframes spin{
-from{transform:rotate(0deg);}
-to{transform:rotate(360deg);}
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
 }
 
 .controls{
-margin-top:10px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
-select,button{
-padding:10px;
-border:none;
-border-radius:8px;
+button,select{
+  padding:10px 14px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 button{
-background:#22c55e;
-color:white;
-cursor:pointer;
+  background:#22c55e;
+  color:white;
 }
 
 .status{
-margin-top:10px;
-color:#22c55e;
+  margin-top:10px;
+  color:#22c55e;
+}
+
+.section-title{
+  padding:20px 20px 10px;
+  font-size:22px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:15px;
+  padding:0 20px 30px;
+}
+
+.card{
+  background:#111827;
+  border-radius:14px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.card:hover{
+  transform:scale(1.03);
+}
+
+.poster{
+  height:120px;
+  background:#1f2937;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+
+.card-title{
+  padding:12px;
 }
 
 @media(max-width:768px){
-.sidebar{
-width:100%;
-min-height:auto;
-}
+  .header{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .search{
+    width:100%;
+    max-width:100%;
+  }
+
+  .poster{
+    height:90px;
+  }
 }
 </style>
 </head>
 <body>
 
-<div class="header">📺 Zamans IPTV</div>
+<div class="header">
+  <div class="logo">📺 Zamans IPTV</div>
 
-<div class="container">
-
-<div class="sidebar">
-
-<div class="channel"
-onclick="playChannel(channels[0].url)">
-Go Live HD 
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Search channels...">
+  </div>
 </div>
 
-<div class="channel"
-onclick="playChannel(channels[1].url)">
-Channel 2
-</div>
+<div class="hero">
 
-<div class="channel"
-onclick="playChannel(channels[2].url)">
-Channel 3
-</div>
+  <div class="player-wrapper">
 
-</div>
+    <div id="loader" class="loader hidden"></div>
 
-<div class="main">
+    <video id="video" controls autoplay playsinline></video>
 
-<div class="player-wrapper">
+  </div>
 
-<div id="loader" class="loader"></div>
+  <div class="controls">
+    <select id="qualitySelect">
+      <option value="-1">Auto Quality</option>
+    </select>
 
-<video id="video"
-controls
-autoplay
-playsinline>
-</video>
+    <button onclick="openFullscreen()">Fullscreen</button>
+  </div>
+
+  <div id="status" class="status">
+    Select a channel
+  </div>
 
 </div>
 
-<div class="controls">
-
-<select id="qualitySelect">
-<option>Auto</option>
-</select>
-
-<button onclick="openFullscreen()">
-Fullscreen
-</button>
-
+<div class="section-title">
+  Live Channels
 </div>
 
-<div id="status" class="status">
-Connecting...
-</div>
-
-</div>
-
-</div>
+<div id="channelGrid" class="grid"></div>
 
 <script>
 
 const channels = [
-
-{
-name:"Go Live HD",
-url:"https://sofascore.live/api/premium-stream?url=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist_b2196000_sleng.m3u8&root=https%3A%2F%2Fd1211whpimeups.cloudfront.net%2Fsmil%3Artbgo%2Fchunklist.m3u8&sig=ddec1d1b7da2e2eb93c3fab8e115f5b91a2bf29fc17aae6e25ccd38b58faeba9"
-},
-
-{
-name:"BEIN Arabic ",
-url:"https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8"
-},
-
-{
-name:"Channel 3",
-url:"https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8"
-}
-
+  {
+    name:"Sample Channel 1",
+    url:"YOUR_STREAM_URL_1"
+  },
+  {
+    name:"Sample Channel 2",
+    url:"YOUR_STREAM_URL_2"
+  },
+  {
+    name:"Sample Channel 3",
+    url:"YOUR_STREAM_URL_3"
+  }
 ];
 
 const video = document.getElementById("video");
 const loader = document.getElementById("loader");
 const status = document.getElementById("status");
+const grid = document.getElementById("channelGrid");
+const searchInput = document.getElementById("searchInput");
 const qualitySelect = document.getElementById("qualitySelect");
 
 let hls;
 
-function showLoader(){
-loader.classList.remove("hidden");
-}
+function renderChannels(list){
 
-function hideLoader(){
-loader.classList.add("hidden");
+  grid.innerHTML = "";
+
+  list.forEach(channel=>{
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div class="poster">📺</div>
+      <div class="card-title">${channel.name}</div>
+    `;
+
+    card.onclick = ()=>playChannel(channel.url);
+
+    grid.appendChild(card);
+
+  });
+
 }
 
 function playChannel(url){
 
-showLoader();
+  loader.classList.remove("hidden");
+  status.innerHTML = "Connecting...";
 
-if(hls){
-hls.destroy();
-}
+  if(hls){
+    hls.destroy();
+  }
 
-if(Hls.isSupported()){
+  if(Hls.isSupported()){
 
-hls = new Hls();
+    hls = new Hls();
 
-hls.loadSource(url);
-hls.attachMedia(video);
+    hls.loadSource(url);
+    hls.attachMedia(video);
 
-hls.on(Hls.Events.MANIFEST_PARSED,function(){
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{
 
-hideLoader();
+      loader.classList.add("hidden");
 
-status.innerHTML="🟢 LIVE";
+      qualitySelect.innerHTML =
+      '<option value="-1">Auto Quality</option>';
 
-qualitySelect.innerHTML =
-'<option value="-1">Auto</option>';
+      hls.levels.forEach((level,index)=>{
 
-hls.levels.forEach((level,index)=>{
+        const option = document.createElement("option");
 
-const option =
-document.createElement("option");
+        option.value = index;
 
-option.value=index;
+        option.text =
+          level.height
+          ? level.height + "p"
+          : "Level " + index;
 
-option.text=
-level.height
-? level.height+"p"
-: "Level "+index;
+        qualitySelect.appendChild(option);
 
-qualitySelect.appendChild(option);
+      });
 
-});
+      status.innerHTML = "🟢 LIVE";
 
-video.play().catch(()=>{});
+      video.play().catch(()=>{});
 
-});
+    });
 
-hls.on(Hls.Events.ERROR,function(){
+    hls.on(Hls.Events.ERROR, ()=>{
 
-hideLoader();
+      loader.classList.add("hidden");
+      status.innerHTML = "🔴 Stream unavailable";
 
-status.innerHTML=
-"🔴 Stream unavailable";
+    });
 
-});
-
-}
+  }
 
 }
 
 qualitySelect.addEventListener("change",function(){
 
-if(!hls) return;
-
-hls.currentLevel =
-parseInt(this.value);
+  if(hls){
+    hls.currentLevel = parseInt(this.value);
+  }
 
 });
 
 function openFullscreen(){
 
-if(video.requestFullscreen){
-video.requestFullscreen();
-}
-else if(video.webkitRequestFullscreen){
-video.webkitRequestFullscreen();
-}
+  if(video.requestFullscreen){
+    video.requestFullscreen();
+  }else if(video.webkitRequestFullscreen){
+    video.webkitRequestFullscreen();
+  }
 
 }
 
-playChannel(channels[0].url);
+searchInput.addEventListener("input",()=>{
+
+  const keyword =
+    searchInput.value.toLowerCase();
+
+  const filtered =
+    channels.filter(c =>
+      c.name.toLowerCase().includes(keyword)
+    );
+
+  renderChannels(filtered);
+
+});
+
+renderChannels(channels);
 
 </script>
 
